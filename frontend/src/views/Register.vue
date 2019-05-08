@@ -56,8 +56,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-import router from '../router';
+// import axios from 'axios';
+// import router from '../router';
 
 export default {
     name: 'register',
@@ -94,7 +94,7 @@ export default {
                 }
             }
 
-            this.$store.dispatch('save', data);
+            this.$store.dispatch('fetchUser', data);
         },
 
     }

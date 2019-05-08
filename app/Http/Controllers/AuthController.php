@@ -28,6 +28,10 @@ class AuthController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
+        // if ($request->has('remember')) {
+        //     User::where('email', $request->email)->update(['remember_token' => $token]);
+        // }
+
         return response()->json(compact('token'));
     }
 

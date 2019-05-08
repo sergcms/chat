@@ -6,10 +6,14 @@
         <router-link class="link" to="/register" >Register</router-link>
       </template>
 
-      <div class="user-info" v-if="token">
-        login: <span class="user-name"><strong>{{ name }}</strong></span>
-        <span class="logout" v-on:click="logout()">Logout</span>
-      </div>
+      <template v-if="token">
+        <button type="button">Create public chat</button>
+        <div class="user-info">
+          login: <span class="user-name"><strong>{{ name }}</strong></span>
+          <span class="logout" v-on:click="logout()">Logout</span>
+        </div>
+      </template>
+
     </div>
     <router-view/>
   </div>
@@ -44,14 +48,17 @@
 
 <script>
 import router from "./router";
-import VueRouter from 'vue-router';
+// import VueRouter from 'vue-router';
 import store from './store.js';
 
 router.beforeEach((to, from, next) => {
+  // if (to.matched.some(record => record.meta.requiresAuth)) {
   if (to.meta.requiresAuth) {
     if (!store.getters.getToken) {
       next('/login');
+      this.$store.dispatch('logout');
     } else {
+      // if ()
 
       next();
     }
@@ -78,14 +85,15 @@ export default {
     },
     name () {
       return this.$store.getters.getUser.name
-    }
+    },
+
   },
 
   mounted () {
-
   },
 
   methods: {
+
     logout: function () {
       return this.$store.dispatch('logout');
     }

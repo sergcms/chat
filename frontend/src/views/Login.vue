@@ -21,18 +21,16 @@
                                     <input id="password" type="password" class="form-control" name="password" required autocomplete="current-password" v-model="password">
                                 </div>
                             </div>
-
-                            <!-- <div class="form-group row">
+                            <div class="form-group row">
                                 <div class="col-md-6 offset-md-5">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
-
+                                        <input class="form-check-input" type="checkbox" name="remember" id="remember" v-model="remember">
                                         <label class="form-check-label" for="remember">
                                             Remember Me
                                         </label>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
 
                             <div class="form-group row mb-0">
                                 <div class="col-md-6 offset-md-6">
@@ -58,8 +56,8 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 
-import axios from 'axios';
-import router from '../router';
+// import axios from 'axios';
+// import router from '../router';
 
 export default {
     name: 'login',
@@ -72,6 +70,7 @@ export default {
         return {
             email: '',
             password: '',
+            remember: false,
         }
     },
 
@@ -89,10 +88,11 @@ export default {
                 auth : {
                     email: this.email,
                     password: this.password,
+                    remember: this.remember
                 }
             }
 
-            this.$store.dispatch('save', data);
+            this.$store.dispatch('fetchUser', data);
 
         },
 

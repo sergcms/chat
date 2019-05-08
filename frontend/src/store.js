@@ -2,12 +2,13 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from './router'
+import Cookies from 'js-cookie'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    token: localStorage.token,
+    token: Cookies.get('token'),
     user: {},
     users: [],
   },
@@ -21,8 +22,10 @@ export default new Vuex.Store({
   mutations: {
     setToken(state, token) {
       state.token = token;
-      localStorage.token = token;
-      // let expireTime = new Date(new Date().getTime() + 10 * 60 * 60 * 1000);
+
+      let expireTime = new Date(new Date().getTime() + 10 * 60 * 60 * 1000); //10 hr
+      
+      Cookies.set('token', token, { expires: expireTime })
     },
 
     setUser(state, user) {
@@ -40,40 +43,44 @@ export default new Vuex.Store({
     logout(state) {
       state.user = {};
       state.token = null;
-      localStorage.removeItem('token');
+      Cookies.remove('token');
     }
   },
 
   actions: {
-    save ({ commit }, data) {
-      // axios.post(window.location.hostname + data.route,  data.auth)
+    // save
+    save ({ commit }, token) {
+      try {
+        var data = JSON.parse(
+          window.atob(
+            token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+          )
+        );
+      } 
+      catch (e) {
+        commit('logout');
+      }
 
-      axios.post('http://chat.test' + data.route,  data.auth)
-        .then((response) => {
-
-          try {
-            var data = JSON.parse(
-              window.atob(
-                response.data.token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
-              )
-            );
-          } 
-          catch (e) {
-            commit('logout');
-          }
-
-          if (response.data.token !== 'undefined') {
-            commit('setToken', response.data.token);
-            commit('setUser', data.user);
-            
-            router.replace('/chat');
-
-          }
-        })
-        .catch(error => error);
+      if (token !== 'undefined') {
+        commit('setToken', token);
+        commit('setUser', data.user);
+        
+        router.replace('/chat');
+      }
 
     },
 
+    // user
+    fetchUser ({ dispatch }, data) {
+      // axios.post(window.location.hostname + data.route,  data.auth)
+      axios.post('http://chat.test' + data.route, data.auth)
+        .then((response) => {
+          dispatch('save', response.data.token);
+        })
+        .catch(error => error);
+    },
+
+    // logout
     logout ({commit}) {
       commit('logout');
 

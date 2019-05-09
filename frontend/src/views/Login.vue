@@ -60,11 +60,13 @@
 // import router from '../router';
 
 export default {
-  name: 'login',
+    name: 'login',
 
-  mounted() {
-       
-  },
+    mounted() {
+        if (this.$store.getters.hasUserId) {
+            this.redirectToSite()
+        }
+    },
 
     data: function () {
         return {
@@ -74,27 +76,22 @@ export default {
         }
     },
 
-    components: {
-
-    },
-
     methods: {
-        login: function login() {
+        login: function () {
             // e.preventDefault();
-
-            // get value from inputs
-            var data = {
-                route: '/api/auth/login',
-                auth : {
-                    email: this.email,
-                    password: this.password,
-                    remember: this.remember
-                }
+            const auth = {
+                email: this.email,
+                password: this.password,
+                remember: this.remember
             }
 
-            this.$store.dispatch('fetchUser', data);
-        },
+            this.$store.dispatch('fetchToken', { data: auth });
 
+            this.redirectToSite()
+        },
+        redirectToSite: function () {
+            this.$router.push('/chat')
+        }
     }
 }
 </script>

@@ -92,11 +92,38 @@ class AuthController extends Controller
         return response()->json(compact('users'));
     }
 
+     /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithToken($token)
+    {
+        // $token = auth()->setTTL(7200)->attempt($credentials);
+
+        return response()->json([
+            'token' => $token,
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
+
     /**
      * logout
      */
-    // public function logout()
-    // {
-    //     return Session::flush();
-    // }
+    public function logout()
+    {
+        return auth()->logout();
+    }
 }

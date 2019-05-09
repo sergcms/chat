@@ -26,6 +26,18 @@ class RoomController extends Controller
             ]);
         }
 
+        /*
+
+        SELECT room_id FROM room_users ru1
+        INNER JOIN (
+            SELECT room_id
+            FROM room_users sub_ru2
+            WHERE (sub_ru2.user_id = $user2.id)
+        ) ru2 ON ru2.room_id = ru1.room_id
+        WHERE user_id = $user1.id
+
+        */
+
         return $room->id;
     }
 
@@ -37,6 +49,7 @@ class RoomController extends Controller
         if (is_array($users)) {
             $rooms = [];
 
+            // ??
             foreach ($users as $id) {
                 $roomsCollection = User::findOrFail($id)->rooms;
 

@@ -16,6 +16,7 @@ export default new Vuex.Store({
   },
 
   getters: {
+    hasUserId: state => (state.user.id !== undefined),
     getToUser: state => state.toUser,
     getUrl:    state => state.url,
     getUser:   state => state.user,
@@ -24,6 +25,11 @@ export default new Vuex.Store({
   },
 
   mutations: {
+
+    failLogin(state) {
+      state.token = null;
+      Cookies.remove('token');
+    },
 
     // set token
     setToken(state, token) {
@@ -35,7 +41,7 @@ export default new Vuex.Store({
     },
 
     // set user
-    setUser(state, user) {
+    setUser(state, { user }) {
       state.user = user;
 
       let index = state.users.findIndex(function (item) {
@@ -66,36 +72,34 @@ export default new Vuex.Store({
 
   actions: {
 
-    // save
-    save ({ commit }, token) {
+    setToken ({ commit }, { token }) {
+      commit('setToken', { token })
+    },
+
+    parseToken ({ commit }, { token }) {
       try {
-        var data = JSON.parse(
+        const { user } = JSON.parse(
           window.atob(
             token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
           )
-        );
-      } 
-      catch (e) {
-        commit('logout');
+        )
+        commit('setUser', { user })
+      } catch (e) {
+        commit('logout')
+        return false
       }
-
-      if (token !== 'undefined') {
-        commit('setToken', token);
-        commit('setUser', data.user);
-        
-        router.replace('/chat');
-      }
-
     },
 
     // user
-    fetchUser ({ dispatch }, data) {
-      // axios.post(window.location.hostname + data.route,  data.auth)
-      axios.post('http://chat.test' + data.route, data.auth)
-        .then((response) => {
-          dispatch('save', response.data.token);
-        })
-        .catch(error => error);
+    async fetchToken ({ commit }, { data }) {
+      try {
+        console.log('asas');
+
+        const { token } = await axios.post('http://chat.test/api/auth/login', data).data
+        commit('setToken', { token })
+      } catch (e) {
+        commit('failLogin')
+      }
     },
 
     // set to user

@@ -28,10 +28,10 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
     
     },
-    {
-      path: '*',
-      redirect: '/login'
-    },
+    // {
+    //   path: '*',
+    //   redirect: '/login'
+    // },
     {
       path: '/chat/room/id',
       name: 'room',
@@ -42,30 +42,17 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  // if (to.matched.some(record => record.meta.requiresAuth)) {
-  // if (store.getters.getToken) {
-  //   try {
-  //     store.dispatch('save', { token : store.getters.getToken });
-  //     // next('/chat');
-  //   }
-  //   catch (e) {
-  //     next('/login');
-  //   }
-  // }
-    
-  if (to.meta.requiresAuth) {
-    if (!store.getters.getToken) {
-      next('/login');
-      store.dispatch('logout');
-    } else {
-      // save info from token
-      // store.dispatch('save', store.getters.getToken);
-      // next('/chat');
-      next();
-    }
-  } else {
-    next();
+  // parse token if exists
+  if (!store.getters.hasUserId && store.getters.getToken) {
+    store.dispatch('parseToken', { token: store.getters.getToken })
   }
+
+  // redirect to login if unauthorized
+  if (to.meta.requiresAuth && !store.getters.hasUserId) {
+    next('/login')
+  }
+
+  next()
 });
 
 export default router;

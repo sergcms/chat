@@ -11,7 +11,7 @@
             <div class="card-body">
               <div class="form-group row">
                 <label for="chat">{{ toUser }}</label>
-                <textarea class="form-control" name="chat" id="chat" rows="25" readonly v-model="messagesHistory.join('\n')"></textarea>
+                <textarea class="form-control" name="chat" id="chat" rows="25" readonly v-bind:value="messagesHistory.join('\n')"></textarea>
               </div>
 
               <div class="form-group row">
@@ -60,7 +60,8 @@ export default {
     //  UserPanel,
   },
 
-  mounted: function () {
+  created: function () {
+    console.log('chat')
   },
 
   computed: {

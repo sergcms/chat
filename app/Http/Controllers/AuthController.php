@@ -82,6 +82,16 @@ class AuthController extends Controller
         return response()->json(compact('user'));
     }
 
+     /**
+     * return users
+     */
+    public function getUsers(Request $request)
+    {
+        $users = User::select('id', 'name', 'email')->get();
+
+        return response()->json(compact('users'));
+    }
+
     /**
      * logout
      */

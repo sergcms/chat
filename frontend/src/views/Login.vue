@@ -93,7 +93,6 @@ export default {
             }
 
             this.$store.dispatch('fetchUser', data);
-
         },
 
     }

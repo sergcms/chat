@@ -10,7 +10,7 @@
           <div class="card">
             <div class="card-body">
               <div class="form-group row">
-                <label for="chat">name</label>
+                <label for="chat">{{ toUser }}</label>
                 <textarea class="form-control" name="chat" id="chat" rows="25" readonly v-model="messagesHistory.join('\n')"></textarea>
               </div>
 
@@ -64,9 +64,10 @@ export default {
   },
 
   computed: {
-    // user_id() {
-    //   return this.$store.getters.getUser.id;
-    // },
+
+    toUser () {
+      return this.$store.getters.getToUser.name;
+    },
 
   },
 

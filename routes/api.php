@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 
 Route::post('chat', 'ChatController@send')->middleware(['jwt.verify']);
 Route::post('room', 'RoomController@room')->middleware(['jwt.verify']);
+Route::get('users', 'AuthController@getUsers')->middleware(['jwt.verify']);
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) 
 {

@@ -63,6 +63,7 @@
 
 <script>
   import axios from "axios";
+  import store from "../store";
 
   export default {
     name: 'user-panel',
@@ -73,27 +74,27 @@
         id: 0,
         activeUsers: [],
         isActive: false,
-        url: this.$store.getters.getUrl,
+        url: store.getters.getUrl,
       }
     },
 
     mounted: function () {
       // get current user id
-      this.user_id = this.$store.getters.getUser.id;
+      this.user_id = store.getters.getUser.id;
     },
 
     computed: {
       
       token () {
-        return this.$store.getters.getToken;
+        return store.getters.getToken;
       },
 
       name () {
-        return this.$store.getters.getUser.name;
+        return store.getters.getUser.name;
       },
 
       users() {
-        return this.$store.getters.getUsers.filter(user => user.id !== this.user_id);
+        return store.getters.getUsers.filter(user => user.id !== this.user_id);
       },
 
     },
@@ -110,23 +111,19 @@
         } else {
           this.activeUsers.push(id);
         }
-      
         // e.target.dataset['userId'];
       },
 
       selectUserForPrivateRoom: function (user_id) {
-        // console.log(this.user_id + ' - ' + user_id);
-        console.log(this.token);
-
         axios.post(this.url + 'room', { users : [this.user_id, user_id], token: this.token })
           .then((response) => {
-            console.log(response);
+            store.dispatch('setToUserOfId', user_id);
           })
           .catch((error) => console.log(error));
       },
 
       logout: function () {
-        return this.$store.dispatch('logout');
+        return store.dispatch('logout');
       }
     },
 

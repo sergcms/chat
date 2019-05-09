@@ -11,14 +11,16 @@ export default new Vuex.Store({
     token: Cookies.get('token'),
     url: 'http://chat.test/api/',
     user: {},
+    toUser: {},
     users: [],
   },
 
   getters: {
-    getUrl:   state => state.url,
-    getUser:  state => state.user,
-    getToken: state => state.token,
-    getUsers: state => state.users,
+    getToUser: state => state.toUser,
+    getUrl:    state => state.url,
+    getUser:   state => state.user,
+    getToken:  state => state.token,
+    getUsers:  state => state.users,
   },
 
   mutations: {
@@ -43,6 +45,15 @@ export default new Vuex.Store({
       if (index == -1) {
         state.users.push(user);
       }
+    },
+
+    // set to user of id
+    setToUser(state, id) {
+      let index = state.users.findIndex(function (item) {
+        return item.id == id; 
+      });
+
+      state.toUser = state.users[index];
     },
 
     // logout
@@ -87,6 +98,11 @@ export default new Vuex.Store({
         .catch(error => error);
     },
 
+    // set to user
+    setToUserOfId ({ commit }, id) {
+      commit('setToUser', id);
+    },
+
     // logout
     logout ({commit}) {
       commit('logout');
@@ -95,3 +111,4 @@ export default new Vuex.Store({
     }
   }
 })
+

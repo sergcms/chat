@@ -60,11 +60,11 @@
 // import router from '../router';
 
 export default {
-    name: 'login',
+  name: 'login',
 
-    mounted() {
+  mounted() {
        
-    },
+  },
 
     data: function () {
         return {

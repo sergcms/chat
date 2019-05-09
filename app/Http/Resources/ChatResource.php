@@ -32,6 +32,7 @@ class ChatResource extends JsonResource
     //         'data' => ChatResource ::collection($this->collection),
     //     ];
     // }
+    
     // public function with($request)
     // {
     //     return [

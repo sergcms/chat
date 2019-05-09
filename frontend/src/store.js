@@ -9,17 +9,21 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     token: Cookies.get('token'),
+    url: 'http://chat.test/api/',
     user: {},
     users: [],
   },
 
   getters: {
-      getUser: state  => state.user,
-      getToken: state => state.token,
-      getUsers: state => state.users,
+    getUrl:   state => state.url,
+    getUser:  state => state.user,
+    getToken: state => state.token,
+    getUsers: state => state.users,
   },
 
   mutations: {
+
+    // set token
     setToken(state, token) {
       state.token = token;
 
@@ -28,6 +32,7 @@ export default new Vuex.Store({
       Cookies.set('token', token, { expires: expireTime })
     },
 
+    // set user
     setUser(state, user) {
       state.user = user;
 
@@ -40,6 +45,7 @@ export default new Vuex.Store({
       }
     },
 
+    // logout
     logout(state) {
       state.user = {};
       state.token = null;
@@ -48,6 +54,7 @@ export default new Vuex.Store({
   },
 
   actions: {
+
     // save
     save ({ commit }, token) {
       try {

@@ -5,21 +5,13 @@
         <router-link class="link" to="/login" >Login</router-link>
         <router-link class="link" to="/register" >Register</router-link>
       </template>
-
-      <template v-if="token">
-        <button type="button">Create public chat</button>
-        <div class="user-info">
-          login: <span class="user-name"><strong>{{ name }}</strong></span>
-          <span class="logout" v-on:click="logout()">Logout</span>
-        </div>
-      </template>
-
     </div>
+
     <router-view/>
   </div>
 </template>
 
-<style>
+<style scoped>
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -37,35 +29,11 @@
     display: flex;
     justify-content: flex-end;
   }
-  .user-name {
-    padding-left: 10px;
-  }
-  .logout {
-    margin-left: 30px;
-    cursor: pointer;
-  }
 </style>
 
 <script>
 import router from "./router";
-// import VueRouter from 'vue-router';
 import store from './store.js';
-
-router.beforeEach((to, from, next) => {
-  // if (to.matched.some(record => record.meta.requiresAuth)) {
-  if (to.meta.requiresAuth) {
-    if (!store.getters.getToken) {
-      next('/login');
-      this.$store.dispatch('logout');
-    } else {
-      // if ()
-
-      next();
-    }
-  } else {
-    next();
-  }
-});
 
 export default {
   data: function () {
@@ -73,6 +41,10 @@ export default {
       // token: '',
       // name: '',
     }
+  },
+
+  components: {
+    
   },
 
   created () {

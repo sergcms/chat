@@ -108,11 +108,6 @@ export default new Vuex.Store({
 
       router.replace('/login');
     },
-
-    // // alert
-    // alert: function (title, message, ) {
-    //   swal("Oops!", "Seems like we couldn't fetch the info", "error");
-    // }
   }
 })
 

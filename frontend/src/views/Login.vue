@@ -85,17 +85,16 @@ export default {
                 const response = await axios.post('http://chat.test/api/auth/login', auth);
                 this.$store.dispatch('setToken', { token: response.data.token });
             } catch (e) {
-                this.alert('Oops!', 'Login or password incorrected!', 'error');
+                swal('Oops!', 'Login or password incorrected!', 'error');
                 this.$store.dispatch('failLogin');
             }
 
-            this.alert('Good!', 'Login and password success!', 'success');
-            this.$router.push('/chat');
+            // swal('Good!', 'Login and password success!', 'success');
+            this.redirectToSite();
         },
 
-        // alert message
-        alert: function (title, text, icon) {
-            swal(title, text, icon);
+        redirectToSite: function () {
+            this.$router.push('/chat');
         }
     }
 }

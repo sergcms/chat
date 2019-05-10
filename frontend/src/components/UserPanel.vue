@@ -70,6 +70,7 @@
 
     data: function () {
       return {
+        users: [],
         user_id: 0,
         id: 0,
         activeUsers: [],
@@ -83,6 +84,10 @@
       this.user_id = store.getters.getUser.id;
     },
 
+    created: function () {
+      this.getUsers();
+    },
+
     computed: {
       
       token () {
@@ -93,16 +98,14 @@
         return store.getters.getUser.name;
       },
 
-      users() {
-        return store.getters.getUsers.filter(user => user.id !== this.user_id);
-      },
+      // users() {
+      //   return store.getters.getUsers.filter(user => user.id !== this.user_id);
+      // },
 
     },
 
     methods: {
       selectUsersChat: function (id) {
-        console.log(this.user_id + ' - ' + id);
-
         // find index of user id
         let index = this.activeUsers.indexOf(id);
 
@@ -120,6 +123,12 @@
             store.dispatch('setToUserOfId', user_id);
           })
           .catch((error) => console.log(error));
+      },
+
+      getUsers: async function () {
+        let { data } = await axios.post('http://chat.test/api/users', { token: this.token });
+        
+        this.users = data.users.filter(user => user.id !== this.user_id);
       },
 
       logout: function () {

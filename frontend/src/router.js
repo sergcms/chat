@@ -26,11 +26,11 @@ const router = new Router({
       name: 'chat',
       meta: { requiresAuth: true },
       component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
-    
     },
     {
-      path: '/chat/room/id',
+      path: '/chat/room/:room_id',
       name: 'room',
+      props: { room_id: true },
       meta: { requiresAuth: true },
       component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
     },

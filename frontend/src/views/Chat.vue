@@ -49,6 +49,8 @@ Vue.component('user-panel', UserPanel);
 export default {
   name: 'chat',
   
+  props: ['room_id'],
+
   data: function () {
     return {
       message: '',
@@ -56,12 +58,8 @@ export default {
     }
   },
 
-  componets: {
-    //  UserPanel,
-  },
-
   created: function () {
-
+    this.getRoom();
   },
 
   computed: {
@@ -73,12 +71,33 @@ export default {
   },
 
   methods: {
-    sendMessage: function() {
+    sendMessage: async function() {
 
-      this.messagesHistory.push(this.message); 
+      let data = [
+        user_id => 2,
+        room_id => 7,
+        message => this.message,
+      ]
+
+      try {
+        let message = await axios.post('http://chat.test/api/message', { data, token: this.token });
+
+        console.log(message);
+
+        this.messagesHistory.push(this.message); 
+  
+      } catch (e) {
+
+      }
 
       this.message = '';
+  
     },
+
+    getRoom: function () {
+
+    },
+
   }
 }
 </script>

@@ -13,6 +13,7 @@ class CreateChatsTable extends Migration
      */
     public function up()
     {
+        // Schema::create('messages', function (Blueprint $table) {
         Schema::create('chats', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');

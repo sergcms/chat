@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chat;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\RoomUser;
@@ -26,18 +27,6 @@ class RoomController extends Controller
             ]);
         }
 
-        /*
-
-        SELECT room_id FROM room_users ru1
-        INNER JOIN (
-            SELECT room_id
-            FROM room_users sub_ru2
-            WHERE (sub_ru2.user_id = $user2.id)
-        ) ru2 ON ru2.room_id = ru1.room_id
-        WHERE user_id = $user1.id
-
-        */
-
         return $room->id;
     }
 
@@ -49,14 +38,18 @@ class RoomController extends Controller
         if (is_array($users)) {
             $rooms = [];
 
-            // ??
-            foreach ($users as $id) {
-                $roomsCollection = User::findOrFail($id)->rooms;
+            
+            /*
 
-                foreach ($roomsCollection as $room) {
-                    $rooms[] = $room->id;
-                }
-            }
+        SELECT room_id FROM room_users ru1
+        INNER JOIN (
+            SELECT room_id
+            FROM room_users sub_ru2
+            WHERE (sub_ru2.user_id = $user2.id)
+        ) ru2 ON ru2.room_id = ru1.room_id
+        WHERE user_id = $user1.id
+
+        */
 
             return collect($rooms)->duplicates();
         }
@@ -74,13 +67,26 @@ class RoomController extends Controller
         if ($room->isEmpty()) {
             $room_id = $this->createRoom($request);
         } else {
-            foreach ($room as $value) {
-                $room_id = $value; 
-            }
+            $room_id = $room;
         };
 
         return response()->json([
-            'room' => $room_id,
+            'room_id' => $room_id,
         ]);
     }
+
+    /**
+     * send message
+     */
+    public function sendMessage(Request $request)
+    {
+        $message = Chat::create([
+            'user_id' => $request->user_id,
+            'room_id' => $request->room_id,
+            'message' => $request->message,
+        ]);
+
+        return response()->json($message->message, 200);
+    }
+
 }

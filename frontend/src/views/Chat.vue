@@ -61,7 +61,7 @@ export default {
   },
 
   created: function () {
-    console.log('chat')
+
   },
 
   computed: {

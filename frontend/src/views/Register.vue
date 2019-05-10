@@ -56,12 +56,13 @@
 </template>
 
 <script>
-// import axios from 'axios';
+
+import axios from 'axios';
 // import router from '../router';
 
 export default {
     name: 'register',
-    
+
     data: function () {
         return {
             name: '',
@@ -80,23 +81,24 @@ export default {
     },
 
     methods: {
-        register: function register() {
-            // e.preventDefault();
-
+        register: async function () {
             // get value from inputs
-            var data = {
-                route: '/api/auth/register',
-                auth: {
-                    name: this.name,
-                    email: this.email, 
-                    password: this.password,
-                    password_confirmation: this.password_confirmation,
-                }
+            var auth = {
+                name: this.name,
+                email: this.email, 
+                password: this.password,
+                password_confirmation: this.password_confirmation,
             }
 
-            this.$store.dispatch('fetchUser', data);
-        },
+            try {
+                const response = await axios.post('http://chat.test/api/auth/register', auth);
+                this.$store.dispatch('setToken', { token: response.data.token });
+            } catch (e) {
+                this.$store.dispatch('failLogin');
+            }
 
+            this.$router.push('/chat');
+        },
     }
 }
 </script>

@@ -2,13 +2,13 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './views/Login.vue'
 import store from './store'
-// import Vuex from 'vuex'
 
 Vue.use(Router)
 
 // export default new Router(
 const router = new Router({
   // base: process.env.BASE_URL,
+  mode: 'history',
 
   routes: [
     {
@@ -28,16 +28,16 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
     
     },
-    // {
-    //   path: '*',
-    //   redirect: '/login'
-    // },
     {
       path: '/chat/room/id',
       name: 'room',
       meta: { requiresAuth: true },
       component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
     },
+    // {
+    //   path: '*',
+    //   redirect: '/login'
+    // },
   ]
 });
 
@@ -50,9 +50,9 @@ router.beforeEach((to, from, next) => {
   // redirect to login if unauthorized
   if (to.meta.requiresAuth && !store.getters.hasUserId) {
     next('/login')
+  } else {
+    next()
   }
-
-  next()
 });
 
 export default router;

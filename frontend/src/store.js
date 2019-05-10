@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 import router from './router'
 import Cookies from 'js-cookie'
+import VueSwal from 'vue-swal'
 
 Vue.use(Vuex)
+Vue.use(VueSwal)
 
 export default new Vuex.Store({
   state: {
@@ -37,7 +38,7 @@ export default new Vuex.Store({
 
       let expireTime = new Date(new Date().getTime() + 10 * 60 * 60 * 1000); //10 hr
       
-      Cookies.set('token', token, { expires: expireTime })
+      Cookies.set('token', token, { expires: expireTime });
     },
 
     // set user
@@ -71,34 +72,23 @@ export default new Vuex.Store({
   },
 
   actions: {
-
+    // set token
     setToken ({ commit }, { token }) {
-      commit('setToken', { token })
+      commit('setToken', token); // { token }
     },
 
+    // parse token 
     parseToken ({ commit }, { token }) {
       try {
         const { user } = JSON.parse(
           window.atob(
             token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
           )
-        )
-        commit('setUser', { user })
-      } catch (e) {
-        commit('logout')
-        return false
-      }
-    },
+        );
 
-    // user
-    async fetchToken ({ commit }, { data }) {
-      try {
-        console.log('asas');
-
-        const { token } = await axios.post('http://chat.test/api/auth/login', data).data
-        commit('setToken', { token })
+        commit('setUser', { user });
       } catch (e) {
-        commit('failLogin')
+        commit('logout');
       }
     },
 
@@ -107,12 +97,22 @@ export default new Vuex.Store({
       commit('setToUser', id);
     },
 
+    // fail login
+    failLogin ({ commit }) {
+      commit('failLogin');
+    },
+
     // logout
     logout ({commit}) {
       commit('logout');
 
       router.replace('/login');
-    }
+    },
+
+    // // alert
+    // alert: function (title, message, ) {
+    //   swal("Oops!", "Seems like we couldn't fetch the info", "error");
+    // }
   }
 })
 

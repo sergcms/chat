@@ -32,19 +32,18 @@
 </style>
 
 <script>
+// import HelloWorld from '@/components/HelloWorld.vue'
+
 import router from "./router";
 import store from './store.js';
 
 export default {
   data: function () {
     return {
-      // token: '',
-      // name: '',
     }
   },
 
   components: {
-    
   },
 
   created () {
@@ -53,22 +52,11 @@ export default {
 
   computed: {
     token () {
-      return this.$store.getters.getToken
+      return this.$store.getters.getToken;
     },
-    name () {
-      return this.$store.getters.getUser.name
-    },
-
-  },
-
-  mounted () {
   },
 
   methods: {
-
-    logout: function () {
-      return this.$store.dispatch('logout');
-    }
   }
 }
 </script>

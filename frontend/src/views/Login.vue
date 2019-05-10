@@ -18,7 +18,7 @@
                                 <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
 
                                 <div class="col-md-6">
-                                    <input id="password" type="password" class="form-control" name="password" required autocomplete="current-password" v-model="password">
+                                    <input id="password" type="password" class="form-control" name="password" required autocomplete="current-password" v-model="password" v-on:keyup.enter="login()">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -53,10 +53,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
-
-// import axios from 'axios';
+import axios from 'axios';
 // import router from '../router';
 
 export default {
@@ -77,20 +74,28 @@ export default {
     },
 
     methods: {
-        login: function () {
-            // e.preventDefault();
+        login: async function () {
             const auth = {
                 email: this.email,
                 password: this.password,
                 remember: this.remember
             }
 
-            this.$store.dispatch('fetchToken', { data: auth });
+            try {
+                const response = await axios.post('http://chat.test/api/auth/login', auth);
+                this.$store.dispatch('setToken', { token: response.data.token });
+            } catch (e) {
+                this.alert('Oops!', 'Login or password incorrected!', 'error');
+                this.$store.dispatch('failLogin');
+            }
 
-            this.redirectToSite()
+            this.alert('Good!', 'Login and password success!', 'success');
+            this.$router.push('/chat');
         },
-        redirectToSite: function () {
-            this.$router.push('/chat')
+
+        // alert message
+        alert: function (title, text, icon) {
+            swal(title, text, icon);
         }
     }
 }

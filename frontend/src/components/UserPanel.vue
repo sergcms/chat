@@ -89,7 +89,6 @@
     },
 
     computed: {
-      
       token () {
         return store.getters.getToken;
       },

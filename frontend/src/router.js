@@ -30,7 +30,7 @@ const router = new Router({
     {
       path: '/chat/room/:room_id',
       name: 'room',
-      props: { room_id: true },
+      props: true,
       meta: { requiresAuth: true },
       component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
     },

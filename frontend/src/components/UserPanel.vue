@@ -2,7 +2,7 @@
   <div class="user-panel bg-info">
     <div v-if="token" class="col-md-12">
       <div class="user-info d-flex justify-content-between">
-        <span class="user-name text-left text-white"><strong>{{ name }}</strong></span>
+        <span class="user-name text-left text-white"><strong>{{ currentUser.name }}</strong></span>
         <span class="logout" v-on:click="logout()">Logout</span>
       </div>
       <hr>
@@ -64,13 +64,14 @@
 <script>
   import axios from "axios";
   import store from "../store";
+import { mapGetters } from 'vuex';
 
   export default {
     name: 'user-panel',
 
     data: function () {
       return {
-        users: [],
+        // users: [],
         user_id: 0,
         id: 0,
         activeUsers: [],
@@ -79,27 +80,20 @@
       }
     },
 
-    mounted: function () {
+    created: function () {
       // get current user id
       this.user_id = store.getters.getUser.id;
-    },
-
-    created: function () {
-      this.getUsers();
+      // get all users
+      this.setUsers();
     },
 
     computed: {
-      token () {
-        return store.getters.getToken;
-      },
 
-      name () {
-        return store.getters.getUser.name;
-      },
-
-      // users() {
-      //   return store.getters.getUsers.filter(user => user.id !== this.user_id);
-      // },
+      ...mapGetters({
+        token: 'getToken',
+        currentUser: 'getUser',
+        users: 'getUsers',
+      }),
 
     },
 
@@ -116,20 +110,39 @@
         // e.target.dataset['userId'];
       },
 
-      selectUserForPrivateRoom: function (user_id) {
-        axios.post(this.url + 'room', { users : [this.user_id, user_id], token: this.token })
-          .then((response) => {
-            store.dispatch('setToUserOfId', user_id);
-          })
-          .catch((error) => console.log(error));
+      // select user for privete room
+      selectUserForPrivateRoom: async function (user_id) {
+
+        this.$store.dispatch('setToUserOfId', user_id);
+
+        try {
+          const { data } = await axios.post('http://chat.test/api/room', 
+                                  { 
+                                    users : [this.user_id, user_id], 
+                                    token: this.token 
+                                  }
+                                );
+
+          this.$router.push('/chat/room/' + data.room_id);
+        } catch (e) {
+          swal('Oops!', 'Room is not created!', 'error');
+        }
       },
 
-      getUsers: async function () {
-        let { data } = await axios.post('http://chat.test/api/users', { token: this.token });
-        
-        this.users = data.users.filter(user => user.id !== this.user_id);
+      // set all users
+      setUsers: async function () {
+        try {
+          let { data } = await axios.post('http://chat.test/api/users', { token: this.token });
+          let users = data.users.filter(user => user.id !== this.user_id);
+
+          store.dispatch('setAllUsers', users);
+        } catch (e) {
+          
+        }
+        // this.users = users;
       },
 
+      // logout
       logout: function () {
         return store.dispatch('logout');
       }

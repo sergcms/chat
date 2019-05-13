@@ -36,22 +36,16 @@ class RoomController extends Controller
     public function checkIssetRoom($users)
     {
         if (is_array($users)) {
-            $rooms = [];
+            // get room
+            $room = DB::select(DB::raw("SELECT u1.room_id FROM room_user u1 
+                INNER JOIN room_user u2 ON u2.room_id = u1.room_id 
+                WHERE u1.user_id = $users[0] AND u2.user_id = $users[1]"));
 
-            
-            /*
+            if (!empty($room[0])) {
+                $room_id = $room[0]->room_id;
 
-        SELECT room_id FROM room_users ru1
-        INNER JOIN (
-            SELECT room_id
-            FROM room_users sub_ru2
-            WHERE (sub_ru2.user_id = $user2.id)
-        ) ru2 ON ru2.room_id = ru1.room_id
-        WHERE user_id = $user1.id
-
-        */
-
-            return collect($rooms)->duplicates();
+                return $room_id;
+            } 
         }
 
         return false;
@@ -64,7 +58,7 @@ class RoomController extends Controller
     {
         $room = $this->checkIssetRoom($request->users);
 
-        if ($room->isEmpty()) {
+        if (!$room) {
             $room_id = $this->createRoom($request);
         } else {
             $room_id = $room;
@@ -80,13 +74,25 @@ class RoomController extends Controller
      */
     public function sendMessage(Request $request)
     {
+        // validate ??
+
         $message = Chat::create([
-            'user_id' => $request->user_id,
-            'room_id' => $request->room_id,
-            'message' => $request->message,
+            'user_id' => $request->data['user'],
+            'room_id' => $request->data['room'],
+            'message' => $request->data['message'],
         ]);
 
         return response()->json($message->message, 200);
+    }
+
+    /**
+     * get all messages of room
+     */
+    public function getMessagesOfRoom(Request $request)
+    {
+        $messages = Chat::where('room_id', $request->room)->get();
+
+        return response()->json($messages, 200);
     }
 
 }

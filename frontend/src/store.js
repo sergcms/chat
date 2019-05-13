@@ -41,8 +41,8 @@ export default new Vuex.Store({
       Cookies.set('token', token, { expires: expireTime });
     },
 
-    // set user
-    setUser(state, { user }) {
+    // set current user
+    setCurrentUser(state, { user }) {
       state.user = user;
 
       let index = state.users.findIndex(function (item) {
@@ -56,11 +56,13 @@ export default new Vuex.Store({
 
     // set to user of id
     setToUser(state, id) {
-      let index = state.users.findIndex(function (item) {
-        return item.id == id; 
-      });
-
+      let index = state.users.findIndex((user) => user.id == id);
       state.toUser = state.users[index];
+    },
+
+    // set all users,
+    setAllUsers(state, users) {
+      state.users = users;
     },
 
     // logout
@@ -86,7 +88,7 @@ export default new Vuex.Store({
           )
         );
 
-        commit('setUser', { user });
+        commit('setCurrentUser', { user });
       } catch (e) {
         commit('logout');
       }
@@ -95,6 +97,11 @@ export default new Vuex.Store({
     // set to user
     setToUserOfId ({ commit }, id) {
       commit('setToUser', id);
+    },
+
+    // set users
+    setAllUsers ({ commit }, users) {
+      commit('setAllUsers', users);
     },
 
     // fail login

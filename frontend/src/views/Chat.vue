@@ -10,7 +10,7 @@
           <div class="card">
             <div class="card-body">
               <div class="form-group row">
-                <label for="chat">{{ toUser }}</label>
+                <label for="chat">{{ toUser.name }}</label>
                 <textarea class="form-control" name="chat" id="chat" rows="25" readonly v-bind:value="messagesHistory.join('\n')"></textarea>
               </div>
 
@@ -42,7 +42,9 @@
 
 <script>
 import Vue from "vue";
+import axios from "axios"
 import UserPanel from "../components/UserPanel.vue";
+import { mapGetters } from 'vuex';
 
 Vue.component('user-panel', UserPanel);
 
@@ -51,21 +53,31 @@ export default {
   
   props: ['room_id'],
 
-  data: function () {
+  data: function() {
     return {
       message: '',
       messagesHistory: [],
     }
   },
 
-  created: function () {
-    this.getRoom();
+  created: function() {
+    // this.getMessages();
+
   },
 
   computed: {
+    ...mapGetters({
+      token: 'getToken',
+      currentUser: 'getUser',
+      toUser: 'getToUser',
+      users: 'getUsers',
+    }),
 
-    toUser () {
-      return this.$store.getters.getToUser.name;
+  },
+
+  watch: {
+    '$route.params.room_id' : function() {
+      this.getMessages();
     },
 
   },
@@ -73,28 +85,52 @@ export default {
   methods: {
     sendMessage: async function() {
 
-      let data = [
-        user_id => 2,
-        room_id => 7,
-        message => this.message,
-      ]
+      let data = {
+        user: this.currentUser.id,
+        room: this.room_id,
+        message: this.message,
+      }
 
-      try {
-        let message = await axios.post('http://chat.test/api/message', { data, token: this.token });
-
-        console.log(message);
-
-        this.messagesHistory.push(this.message); 
-  
-      } catch (e) {
-
+      if (this.message != '') { 
+        try {
+          // const { data } = await axios.post('http://chat.test/api/message', { data, token: this.token });
+          let response = await axios.post('http://chat.test/api/message', { data, token: this.token });
+          
+          this.messagesHistory.push(response.data); 
+        } catch (e) {
+          this.$swal('Oops!', 'Your message is not delivered!', 'error');
+        }
+      } else {
+        return this.$swal('Oops!', 'Write message!', 'error');
       }
 
       this.message = '';
-  
     },
 
-    getRoom: function () {
+    getMessages: async function() {
+      try {
+        var self = this;
+
+        var response = await axios.post('http://chat.test/api/messages',  
+          { room: this.room_id, token: this.token });
+        
+        
+      } catch (e) {
+        this.$swal('Oops!', 'History messages not found!', 'error');
+      }
+     
+
+       response.data.forEach(function (item, key) {
+            var id = item.user_id;
+            if (self.currentUser.id == id) {
+              self.messagesHistory.push('You: \n' + item.message);
+            } else {
+              let user = self.users.filter(user => user.id == id);
+              self.messagesHistory.push(user[0].name + ': \n' + item.message);
+            }
+          });
+
+
 
     },
 

@@ -31,5 +31,5 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router)
     Route::post('logout', 'AuthController@logout');
     Route::post('register', 'AuthController@register');
     Route::post('user', 'AuthController@getAuthenticatedUser');
-    // Route::post('refresh', 'AuthController@refresh');
+    Route::post('refresh', 'AuthController@refresh');
 });

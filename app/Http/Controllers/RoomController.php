@@ -7,7 +7,9 @@ use App\Models\Room;
 use App\Models\User;
 use App\Models\RoomUser;
 use Illuminate\Http\Request;
+use App\Events\MessagePushed;
 use Illuminate\Support\Facades\DB;
+
 
 class RoomController extends Controller
 {
@@ -81,6 +83,9 @@ class RoomController extends Controller
             'room_id' => $request->data['room'],
             'message' => $request->data['message'],
         ]);
+
+        MessagePushed::dispatch($message);
+        // dispatch(new MessagePushed($message));
 
         return response()->json($message->message, 200);
     }

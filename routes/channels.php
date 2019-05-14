@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -12,5 +14,21 @@
 */
 
 Broadcast::channel('room.{room_id}', function ($user, $room_id) {
+    Log::info('Showing user profile for user: ');
+
+    Log::debug(['user' => $user, 'room_id' => $room_id, 'prava' => $user->rooms->contains($room_id) ]);
+
     return $user->rooms->contains($room_id);
 });
+
+Broadcast::channel('laravel_database_room.{room_id}', function ($user, $room_id) {
+    Log::info('Showing user profile for user: ');
+     
+    Log::debug('message', ['user' => $user, 'room_id' => $room_id, 'prava' => $user->rooms->contains($room_id) ]);
+
+    return $user->rooms->contains($room_id);
+});
+
+// Broadcast::channel('chat', function () {
+//     return true;
+// });

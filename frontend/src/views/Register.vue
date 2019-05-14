@@ -86,7 +86,7 @@ export default {
                 const response = await axios.post('http://chat.test/api/auth/register', auth);
                 this.$store.dispatch('setToken', { token: response.data.token });
             } catch (e) {
-                swal('Oops!', 'Fieds not verified!', 'error');
+                this.$swal('Oops!', 'Fieds not verified!', 'error');
                 this.$store.dispatch('failLogin');
             }
 

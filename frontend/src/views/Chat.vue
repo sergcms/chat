@@ -45,6 +45,24 @@ import Vue from "vue";
 import axios from "axios"
 import UserPanel from "../components/UserPanel.vue";
 import { mapGetters } from 'vuex';
+import Echo from 'laravel-echo'
+import router from '../router';
+
+window.io = require('socket.io-client');
+// Have this in case you stop running your laravel echo server
+if (typeof io !== 'undefined') {
+  window.Echo = new Echo({
+    broadcaster: 'socket.io',
+    // host: window.location.hostname + ':6001',
+    host: 'http://chat.test' + ':6001',
+    auth: {
+      headers: {
+          Authorization: 'Bearer ' + this.token,
+      },
+    },
+  });
+}
+
 
 Vue.component('user-panel', UserPanel);
 
@@ -65,6 +83,12 @@ export default {
 
   },
 
+  mounted() {
+    // Echo.private("comment").listen("CommentSent", e => {
+    //     console.log('Event listen CommentSent');
+    //   });
+  },
+
   computed: {
     ...mapGetters({
       token: 'getToken',
@@ -73,16 +97,49 @@ export default {
       users: 'getUsers',
     }),
 
+    // channel() {
+    //   return window.Echo.channel('laravel_database_room.' + this.room_id);
+    // },
+
+  },
+
+  created() {
+    
+    
   },
 
   watch: {
-    '$route.params.room_id' : function() {
-      this.getMessages();
+    '$route.params.room_id' : function(room) {
+      if (room == undefined) {
+        router.push('/chat');
+      } 
+
+      this.loadRoom()
+      
+
+      // window.Echo.channel('laravel_database_room.' + room)
+      //   .listen('MessagePushed', (message) => {
+      //     console.log(message.message + '!');
+      // });
     },
 
   },
 
   methods: {
+    // load room with listen event
+    loadRoom: function() {
+      // if (room == undefined) {
+
+        // window.Echo.channel('laravel_database_room.' + this.room_id)
+        window.Echo.private('laravel_database_room.' + this.room_id)
+          .listen('MessagePushed', ({ message }) => {
+            this.messagesHistory.push(message.message + '!!!');
+          });
+
+        this.getMessages();
+    },
+
+    // send message
     sendMessage: async function() {
 
       let data = {
@@ -107,6 +164,7 @@ export default {
       this.message = '';
     },
 
+    // get history messages of room
     getMessages: async function() {
       try {
         var self = this;
@@ -118,19 +176,18 @@ export default {
       } catch (e) {
         this.$swal('Oops!', 'History messages not found!', 'error');
       }
-     
 
-       response.data.forEach(function (item, key) {
-            var id = item.user_id;
-            if (self.currentUser.id == id) {
-              self.messagesHistory.push('You: \n' + item.message);
-            } else {
-              let user = self.users.filter(user => user.id == id);
-              self.messagesHistory.push(user[0].name + ': \n' + item.message);
-            }
-          });
+      self.messagesHistory = [];
 
-
+      response.data.forEach(function (item) {
+        var id = item.user_id;
+        if (self.currentUser.id == id) {
+          self.messagesHistory.push('You: \n' + item.message);
+        } else {
+          let user = self.users.filter(user => user.id == id);
+          self.messagesHistory.push(user[0].name + ': \n' + item.message);
+        }
+      });
 
     },
 

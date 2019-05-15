@@ -99,12 +99,6 @@ export default {
       } 
 
       this.loadRoom()
-      
-
-      // window.Echo.channel('laravel_database_room.' + room)
-      //   .listen('MessagePushed', (message) => {
-      //     console.log(message.message + '!');
-      // });
     },
 
   },
@@ -113,14 +107,12 @@ export default {
     // load room with listen event
     loadRoom: function() {
       // if (room == undefined) {
-        console.log('ok');
-
         // window.Echo.channel('laravel_database_room.' + this.room_id)
-        window.Echo.private('laravel_database_room.' + this.room_id)
-          .listen('MessagePushed', (message) => {
-            console.log('ok');
-            // this.messagesHistory.push(message.message + '!!!');
-            console.log(message);
+
+        window.Echo.private('room.' + this.room_id)
+          .listen('MessagePushed', ({ message }) => {
+            this.messagesHistory.push(message.message);
+            // console.log(message);
           });
 
         this.getMessages();
@@ -140,7 +132,7 @@ export default {
           // const { data } = await axios.post('http://chat.test/api/message', { data, token: this.token }); // ??
           let response = await axios.post('http://chat.test/api/message', { data, token: this.token });
           
-          this.messagesHistory.push(response.data); 
+          // this.messagesHistory.push(response.data); 
         } catch (e) {
           this.$swal('Oops!', 'Your message is not delivered!', 'error');
         }

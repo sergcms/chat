@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -11,7 +13,10 @@
 |
 */
 
-Broadcast::channel('laravel_database_room.{room_id}', function ($user, $room_id) {
+Broadcast::channel('room.{room_id}', function ($user, $room_id) {
+
+    Log::debug('message', ['room_id' => $room_id]);
+    
     return $user->rooms->contains($room_id);
 });
 

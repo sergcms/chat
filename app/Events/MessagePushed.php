@@ -26,7 +26,6 @@ class MessagePushed implements ShouldBroadcast
      */
     public function __construct(Chat $message)
     {
-        // $this->to = $to;
         $this->dontBroadcastToCurrentUser();
         $this->message = $message;
     }
@@ -38,8 +37,11 @@ class MessagePushed implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        // return new Channel('room.' . $this->message->room_id);
-        return new PrivateChannel('room.' . $this->message->room_id);
+        // if ($this->message->room_id) {
+            return new PrivateChannel('room.' . $this->message->room_id);
+        // }
+
+        // return new PrivateChannel('chat');
     }
 
     // public function broadcastWith()

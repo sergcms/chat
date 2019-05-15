@@ -14,12 +14,11 @@ use Illuminate\Support\Facades\Log;
 */
 
 Broadcast::channel('room.{room_id}', function ($user, $room_id) {
-
-    Log::debug('message', ['room_id' => $room_id]);
-    
     return $user->rooms->contains($room_id);
 });
 
-// Broadcast::channel('chat', function () {
+// Broadcast::channel('chat', function ($user) {
+//     Log::info('yes');
+
 //     return true;
 // });

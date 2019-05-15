@@ -63,14 +63,16 @@ export default {
   },
 
   created: function() {
-    // this.getMessages();
+    // window.Echo.private('chat')
+    //   .listen('MessagePushed', ({ message }) => {
+    //     console.log('chat');
+    //     this.messagesHistory.push(message.message);
+    //   });
 
+    // this.getMessages();
   },
 
   mounted() {
-    // Echo.private("comment").listen("CommentSent", e => {
-    //     console.log('Event listen CommentSent');
-    //   });
   },
 
   computed: {
@@ -87,11 +89,6 @@ export default {
 
   },
 
-  // created() {
-    
-    
-  // },
-
   watch: {
     '$route.params.room_id' : function(room) {
       if (room == undefined) {
@@ -106,13 +103,9 @@ export default {
   methods: {
     // load room with listen event
     loadRoom: function() {
-      // if (room == undefined) {
-        // window.Echo.channel('laravel_database_room.' + this.room_id)
-
         window.Echo.private('room.' + this.room_id)
           .listen('MessagePushed', ({ message }) => {
             this.messagesHistory.push(message.message);
-            // console.log(message);
           });
 
         this.getMessages();
@@ -129,7 +122,6 @@ export default {
 
       if (this.message != '') { 
         try {
-          // const { data } = await axios.post('http://chat.test/api/message', { data, token: this.token }); // ??
           let response = await axios.post('http://chat.test/api/message', { data, token: this.token });
           
           // this.messagesHistory.push(response.data); 
@@ -151,7 +143,6 @@ export default {
         var response = await axios.post('http://chat.test/api/messages',  
           { room: this.room_id, token: this.token });
         
-        
       } catch (e) {
         this.$swal('Oops!', 'History messages not found!', 'error');
       }
@@ -160,12 +151,14 @@ export default {
 
       response.data.forEach(function (item) {
         var id = item.user_id;
-        if (self.currentUser.id == id) {
-          self.messagesHistory.push('You: \n' + item.message);
-        } else {
-          let user = self.users.filter(user => user.id == id);
-          self.messagesHistory.push(user[0].name + ': \n' + item.message);
-        }
+        // if (self.currentUser.id == id) {
+        //   self.messagesHistory.push('You: \n' + item.message);
+        // } else {
+        //   let user = self.users.filter(user => user.id == id);
+        //   self.messagesHistory.push(user[0].name + ': \n' + item.message);
+        // }
+
+        self.messagesHistory.push(item.message);
       });
 
     },

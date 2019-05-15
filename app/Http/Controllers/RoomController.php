@@ -77,13 +77,21 @@ class RoomController extends Controller
     public function sendMessage(Request $request)
     {
         // validate ??
+        
+        if ($request->data['room']) {
+            $message = Chat::create([
+                'user_id' => $request->data['user'],
+                'room_id' => $request->data['room'],
+                'message' => $request->data['message'],
+            ]);
+        } else {
+            $message = Chat::create([
+                'user_id' => $request->data['user'],
+                'message' => $request->data['message'],
+            ]);
+        }
 
-        $message = Chat::create([
-            'user_id' => $request->data['user'],
-            'room_id' => $request->data['room'],
-            'message' => $request->data['message'],
-        ]);
-
+        // event message
         MessagePushed::dispatch($message);
 
         return response()->json($message->message, 200);

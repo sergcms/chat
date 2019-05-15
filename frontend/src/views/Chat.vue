@@ -16,7 +16,7 @@
 
               <div class="form-group row">
                 <div class="col-md-10">
-                  <input id="message" type="message" class="form-control" name="message" v-model="message" required v-on:keyup.enter="sendMessage()">
+                  <input id="message" type="message" class="form-control" name="message" v-model="message" placeholder="Message..." required v-on:keyup.enter="sendMessage()">
                 </div>
             
                 <div class="col-md-2">
@@ -47,22 +47,6 @@ import UserPanel from "../components/UserPanel.vue";
 import { mapGetters } from 'vuex';
 import Echo from 'laravel-echo'
 import router from '../router';
-
-window.io = require('socket.io-client');
-// Have this in case you stop running your laravel echo server
-if (typeof io !== 'undefined') {
-  window.Echo = new Echo({
-    broadcaster: 'socket.io',
-    // host: window.location.hostname + ':6001',
-    host: 'http://chat.test' + ':6001',
-    auth: {
-      headers: {
-          Authorization: 'Bearer ' + this.token,
-      },
-    },
-  });
-}
-
 
 Vue.component('user-panel', UserPanel);
 
@@ -103,10 +87,10 @@ export default {
 
   },
 
-  created() {
+  // created() {
     
     
-  },
+  // },
 
   watch: {
     '$route.params.room_id' : function(room) {
@@ -129,11 +113,14 @@ export default {
     // load room with listen event
     loadRoom: function() {
       // if (room == undefined) {
+        console.log('ok');
 
         // window.Echo.channel('laravel_database_room.' + this.room_id)
         window.Echo.private('laravel_database_room.' + this.room_id)
-          .listen('MessagePushed', ({ message }) => {
-            this.messagesHistory.push(message.message + '!!!');
+          .listen('MessagePushed', (message) => {
+            console.log('ok');
+            // this.messagesHistory.push(message.message + '!!!');
+            console.log(message);
           });
 
         this.getMessages();
@@ -150,7 +137,7 @@ export default {
 
       if (this.message != '') { 
         try {
-          // const { data } = await axios.post('http://chat.test/api/message', { data, token: this.token });
+          // const { data } = await axios.post('http://chat.test/api/message', { data, token: this.token }); // ??
           let response = await axios.post('http://chat.test/api/message', { data, token: this.token });
           
           this.messagesHistory.push(response.data); 

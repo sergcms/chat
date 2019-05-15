@@ -85,7 +85,6 @@ class RoomController extends Controller
         ]);
 
         MessagePushed::dispatch($message);
-        // dispatch(new MessagePushed($message));
 
         return response()->json($message->message, 200);
     }

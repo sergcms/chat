@@ -142,7 +142,6 @@
         } catch (e) {
           
         }
-        // this.users = users;
       },
 
       // logout

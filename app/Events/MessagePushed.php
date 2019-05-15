@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Chat;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -36,12 +37,16 @@ class MessagePushed implements ShouldBroadcast
      */
     public function broadcastOn()
     {
+        Log::info('test');
+
         // return new Channel('room.' . $this->message->room_id);
         return new PrivateChannel('room.' . $this->message->room_id);
     }
 
     public function broadcastWith()
     {
-        return $this->message;
+        Log::info('ok');
+
+        return ['message' => $this->message];
     }
 }

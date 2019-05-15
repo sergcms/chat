@@ -9,20 +9,20 @@ import VueSwal from 'vue-swal'
 
 Vue.config.productionTip = false;
 
-// window.io = require('socket.io-client');
-// // Have this in case you stop running your laravel echo server
-// if (typeof io !== 'undefined') {
-//   window.Echo = new Echo({
-//     broadcaster: 'socket.io',
-//     // host: window.location.hostname + ':6001',
-//     host: 'http://chat.test' + ':6001',
-//     auth: {
-//       headers: {
-//           Authorization: 'Bearer ' + AUTH_API_TOKEN,
-//       },
-//     },
-//   });
-// }
+window.io = require('socket.io-client');
+// Have this in case you stop running your laravel echo server
+if (typeof io !== 'undefined') {
+  window.Echo = new Echo({
+    broadcaster: 'socket.io',
+    // host: window.location.hostname + ':6001',
+    host: 'http://chat.test' + ':6001',
+    auth: {
+      headers: {
+        Authorization: 'Bearer ' + store.getters.getToken,
+      },
+    },
+  });
+}
 
 new Vue({ 
         axios, 

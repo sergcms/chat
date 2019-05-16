@@ -21,13 +21,8 @@ class RoomController extends Controller
         // create room
         $room = Room::create([]);
 
-        // create connect
-        foreach ($request->users as $id) {
-            DB::table('room_user')->insert([
-                'room_id' => $room->id,
-                'user_id' => (int)$id,
-            ]);
-        }
+        $room_user = new Room();
+        $room_user->createRoomUser($request->users, $room->id);
 
         return $room->id;
     }
@@ -38,16 +33,10 @@ class RoomController extends Controller
     public function checkIssetRoom($users)
     {
         if (is_array($users)) {
-            // get room
-            $room = DB::select(DB::raw("SELECT u1.room_id FROM room_user u1 
-                INNER JOIN room_user u2 ON u2.room_id = u1.room_id 
-                WHERE u1.user_id = $users[0] AND u2.user_id = $users[1]"));
+            $room = new Room();
+            $room_id = $room->getRoom($users);
 
-            if (!empty($room[0])) {
-                $room_id = $room[0]->room_id;
-
-                return $room_id;
-            } 
+            return $room_id;
         }
 
         return false;
@@ -58,13 +47,11 @@ class RoomController extends Controller
      */
     public function room(Request $request)
     {
-        $room = $this->checkIssetRoom($request->users);
+        $room_id = $this->checkIssetRoom($request->users);
 
-        if (!$room) {
+        if (!$room_id) {
             $room_id = $this->createRoom($request);
-        } else {
-            $room_id = $room;
-        };
+        } 
 
         return response()->json([
             'room_id' => $room_id,
@@ -77,7 +64,7 @@ class RoomController extends Controller
     public function sendMessage(Request $request)
     {
         // validate ??
-        
+
         if ($request->data['room']) {
             $message = Chat::create([
                 'user_id' => $request->data['user'],

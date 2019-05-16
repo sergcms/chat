@@ -16,55 +16,36 @@ class Room extends Model
     }
 
     /**
-     * create new room
+     * create connect room wirh user
      */
-    public function createRoom(Request $request)
+    public function createRoomUser($users, $room_id)
     {
-        // create room
-        $room = Room::create([]);
-
-        // create connect
-        foreach ($request->users as $id) {
+        foreach ($users as $id) {
             DB::table('room_user')->insert([
-                'room_id' => $room->id,
+                'room_id' => $room_id,
                 'user_id' => (int)$id,
             ]);
         }
 
-        return $room->id;
+        return true;
     }
 
     /**
-     * check isset room
+     * get room if isset
      */
-    public function checkIssetRoom($users)
+    public function getRoom($users)
     {
-        if (is_array($users)) {
-            $rooms = [];
+        $room = DB::select(DB::raw("SELECT u1.room_id FROM room_user u1 
+            INNER JOIN room_user u2 ON u2.room_id = u1.room_id 
+            WHERE u1.user_id = $users[0] AND u2.user_id = $users[1]"));
 
+        if (!empty($room[0])) {
+            $room_id = $room[0]->room_id;
 
-            return collect($rooms)->duplicates();
-        }
+            return $room_id;
+        } 
 
         return false;
-    }
-
-     /**
-     * room 
-     */
-    public function room(Request $request)
-    {
-        $room = $this->checkIssetRoom($request->users);
-
-        if ($room->isEmpty()) {
-            $room_id = $this->createRoom($request);
-        } else {
-            $room_id = $room;
-        };
-
-        return response()->json([
-            'room_id' => $room_id,
-        ]);
     }
 
 }

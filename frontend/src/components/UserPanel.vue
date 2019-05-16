@@ -12,7 +12,7 @@
       </div>
       <hr>
       <div class="general d-flex justify-content-start">
-        <span v-on:click="generalChat()">General channel</span>
+        <span v-on:click=" route.push('/chat') ">General channel</span>
       </div>
       <hr>
       <div class="users-list d-flex" id="users">
@@ -72,10 +72,8 @@
     data: function () {
       return {
         user_id: 0,
-        // id: 0,
         activeUsers: [],
         isActive: false,
-        url: store.getters.getUrl,
       }
     },
 
@@ -91,7 +89,6 @@
     },
 
     computed: {
-
       ...mapGetters({
         token: 'getToken',
         currentUser: 'getUser',

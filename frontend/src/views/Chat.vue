@@ -10,7 +10,7 @@
           <div class="card">
             <div class="card-body">
               <div class="form-group row">
-                <label for="chat">{{ toUser.name }}</label>
+                <label for="chat">{{ toUser.name != undefined ? toUser.name : 'General chat' }}</label>
                 <textarea class="form-control" name="chat" id="chat" rows="25" readonly v-bind:value="messagesHistory.join('\n')"></textarea>
               </div>
 
@@ -63,13 +63,13 @@ export default {
   },
 
   created: function() {
-    // window.Echo.private('chat')
-    //   .listen('MessagePushed', ({ message }) => {
-    //     console.log('chat');
-    //     this.messagesHistory.push(message.message);
-    //   });
+    window.Echo.private('chat')
+      .listen('MessagePushed', ({ message }) => {
+        console.log('chat');
+        this.messagesHistory.push(message.message);
+      });
 
-    // this.getMessages();
+    this.getMessages();
   },
 
   mounted() {
@@ -82,10 +82,6 @@ export default {
       toUser: 'getToUser',
       users: 'getUsers',
     }),
-
-    // channel() {
-    //   return window.Echo.channel('laravel_database_room.' + this.room_id);
-    // },
 
   },
 
@@ -142,7 +138,6 @@ export default {
 
         var response = await axios.post('http://chat.test/api/messages',  
           { room: this.room_id, token: this.token });
-        
       } catch (e) {
         this.$swal('Oops!', 'History messages not found!', 'error');
       }

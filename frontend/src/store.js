@@ -76,7 +76,7 @@ export default new Vuex.Store({
   actions: {
     // set token
     setToken ({ commit }, { token }) {
-      commit('setToken', token); // { token }
+      commit('setToken', token);
     },
 
     // parse token 

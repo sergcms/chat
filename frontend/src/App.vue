@@ -32,20 +32,10 @@
 </style>
 
 <script>
-// import HelloWorld from '@/components/HelloWorld.vue'
-
 import router from "./router";
 import store from './store.js';
 
 export default {
-  data: function () {
-    return {
-    }
-  },
-
-  components: {
-  },
-
   created () {
     router.push("/login");
   },
@@ -56,8 +46,6 @@ export default {
     },
   },
 
-  methods: {
-  }
 }
 </script>
 

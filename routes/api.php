@@ -13,15 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 // Route::get('/', 'SinglePageController@index')->where('any', '.*');
 
 Route::group([ 'middleware' => ['api', 'jwt.verify']], function ($router) 
 {
-    // Route::post('chat', 'ChatController@send')->middleware(['jwt.verify']);
     Route::post('chat', 'ChatController@send');
     Route::post('room', 'RoomController@room');
     Route::post('message', 'RoomController@sendMessage');

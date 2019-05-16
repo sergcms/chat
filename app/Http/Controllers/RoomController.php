@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Chat;
 use App\Models\Room;
 use App\Models\User;
-use App\Models\RoomUser;
 use Illuminate\Http\Request;
 use App\Events\MessagePushed;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +64,7 @@ class RoomController extends Controller
     {
         // validate ??
 
-        if ($request->data['room']) {
+        if (isset($request->data['room'])) {
             $message = Chat::create([
                 'user_id' => $request->data['user'],
                 'room_id' => $request->data['room'],
@@ -78,7 +77,7 @@ class RoomController extends Controller
             ]);
         }
 
-        // event message
+        // dispatch message
         MessagePushed::dispatch($message);
 
         return response()->json($message->message, 200);
@@ -89,7 +88,11 @@ class RoomController extends Controller
      */
     public function getMessagesOfRoom(Request $request)
     {
-        $messages = Chat::where('room_id', $request->room)->get();
+        if (isset($request->room)) {
+            $messages = Chat::where('room_id', $request->room)->get();
+        } else {
+            $messages = Chat::where('room_id', NULL)->get();
+        }
 
         return response()->json($messages, 200);
     }

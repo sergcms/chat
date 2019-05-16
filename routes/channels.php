@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Log;
-
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -17,8 +15,6 @@ Broadcast::channel('room.{room_id}', function ($user, $room_id) {
     return $user->rooms->contains($room_id);
 });
 
-// Broadcast::channel('chat', function ($user) {
-//     Log::info('yes');
-
-//     return true;
-// });
+Broadcast::channel('chat', function ($user) {
+    return true;
+});

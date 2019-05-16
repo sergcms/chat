@@ -37,11 +37,11 @@ class MessagePushed implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        // if ($this->message->room_id) {
+        if ($this->message->room_id) {
             return new PrivateChannel('room.' . $this->message->room_id);
-        // }
+        }
 
-        // return new PrivateChannel('chat');
+        return new PrivateChannel('chat');
     }
 
     // public function broadcastWith()

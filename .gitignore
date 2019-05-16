@@ -1,7 +1,10 @@
 /node_modules
 /frontend/node_modules
 /public/hot
+/public/js
+/public/css
 /public/storage
+# /resources/views/index.blade.php
 /storage/*.key
 /vendor
 .env

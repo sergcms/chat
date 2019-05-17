@@ -24,6 +24,7 @@ const router = new Router({
     {
       path: '/chat',
       name: 'chat',
+      props: true,
       meta: { requiresAuth: true },
       component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
     },
@@ -32,7 +33,7 @@ const router = new Router({
       name: 'room',
       props: true,
       meta: { requiresAuth: true },
-      component: () => import(/* webpackChunkName: "chat" */ './views/Chat.vue'),
+      component: () => import(/* webpackChunkName: "chat" */ './views/Room.vue'),
     },
     // {
     //   path: '*',

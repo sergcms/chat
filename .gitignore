@@ -4,7 +4,7 @@
 /public/js
 /public/css
 /public/storage
-# /resources/views/index.blade.php
+/resources/views/index.blade.php
 /storage/*.key
 /vendor
 .env

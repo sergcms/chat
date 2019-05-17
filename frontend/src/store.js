@@ -3,11 +3,19 @@ import Vuex from 'vuex'
 import router from './router'
 import Cookies from 'js-cookie'
 import VueSwal from 'vue-swal'
+import Echo from 'laravel-echo';
+
+import general from './store/module/general';
+// window.io = require('socket.io-client');
 
 Vue.use(Vuex)
 Vue.use(VueSwal)
 
 export default new Vuex.Store({
+  modules: {
+    general,
+  },
+
   state: {
     token: Cookies.get('token'),
     url: 'http://chat.test/api/',
@@ -35,10 +43,9 @@ export default new Vuex.Store({
     // set token
     setToken(state, token) {
       state.token = token;
-
-      let expireTime = new Date(new Date().getTime() + 10 * 60 * 60 * 1000); //10 hr
-      
-      Cookies.set('token', token, { expires: expireTime });
+      // let expireTime = new Date(new Date().getTime() + 10 * 60 * 60 * 1000); //10 hr
+      // Cookies.set('token', token, { expires: expireTime });
+      Cookies.set('token', token);
     },
 
     // set current user
@@ -70,17 +77,36 @@ export default new Vuex.Store({
       state.user = {};
       state.token = null;
       Cookies.remove('token');
-    }
+    },
+
+    // Echo authorization 
+    EchoAuth(state) {
+      // // Have this in case you stop running your laravel echo server
+      // if (typeof io !== 'undefined') {
+        window.Echo = new Echo({
+          broadcaster: 'socket.io',
+          // host: window.location.hostname + :'6001',
+          host: 'http://chat.test' + ':6001',
+          auth: {
+            headers: {
+              Authorization: 'Bearer ' + state.token,
+            },
+          },
+        });
+
+        // return window.Echo.private(channel);
+      // }
+    },
   },
 
   actions: {
     // set token
-    setToken ({ commit }, { token }) {
+    setToken({ commit }, { token }) {
       commit('setToken', token);
     },
 
     // parse token 
-    parseToken ({ commit }, { token }) {
+    parseToken({ commit }, { token }) {
       try {
         const { user } = JSON.parse(
           window.atob(
@@ -95,25 +121,30 @@ export default new Vuex.Store({
     },
 
     // set to user
-    setToUserOfId ({ commit }, id) {
+    setToUserOfId({ commit }, id) {
       commit('setToUser', id);
     },
 
     // set users
-    setAllUsers ({ commit }, users) {
+    setAllUsers({ commit }, users) {
       commit('setAllUsers', users);
     },
 
     // fail login
-    failLogin ({ commit }) {
+    failLogin({ commit }) {
       commit('failLogin');
     },
 
     // logout
-    logout ({commit}) {
+    logout({commit}) {
       commit('logout');
 
       router.replace('/login');
+    },
+
+    // Echo authorization 
+    EchoAuth({commit}) {
+      commit('EchoAuth');
     },
   }
 })

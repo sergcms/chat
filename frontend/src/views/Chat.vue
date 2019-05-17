@@ -1,59 +1,21 @@
 <template>
-  <div class="chat mt-5">
-    <div class="container-fluit">
-      <div class="row">
-        <div class="col-md-3">
-          <user-panel/>
-        </div>
-
-        <div class="col-md-9 ml-m3">
-          <div class="card">
-            <div class="card-body">
-              <div class="form-group row">
-                <label for="chat">{{ toUser.name != undefined ? toUser.name : 'General chat' }}</label>
-                <textarea class="form-control" name="chat" id="chat" rows="25" readonly v-bind:value="messagesHistory.join('\n')"></textarea>
-              </div>
-
-              <div class="form-group row">
-                <div class="col-md-10">
-                  <input id="message" type="message" class="form-control" name="message" v-model="message" placeholder="Message..." required v-on:keyup.enter="sendMessage()">
-                </div>
-            
-                <div class="col-md-2">
-                  <button class="btn btn-primary" v-on:click="sendMessage()">
-                    Send
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <chat-panel v-bind:to-user="toUser" v-on:sendMessage="sendMessage" v-bind:messagesHistory="messagesHistory"></chat-panel>
 </template>
-
-<style scoped>
-  .ml-m3 {
-    margin-left: -30px;
-  }
-</style>
-
 
 <script>
 import Vue from "vue";
-import axios from "axios"
+import axios from "axios";
 import UserPanel from "../components/UserPanel.vue";
+import ChatPanel from "../components/ChatPanel.vue";
 import { mapGetters } from 'vuex';
-import Echo from 'laravel-echo'
-import router from '../router';
+import Echo from 'laravel-echo';
+// import router from '../router';
 
 Vue.component('user-panel', UserPanel);
+Vue.component('chat-panel', ChatPanel);
 
 export default {
   name: 'chat',
-  
-  props: ['room_id'],
 
   data: function() {
     return {
@@ -63,16 +25,12 @@ export default {
   },
 
   created: function() {
-    window.Echo.private('chat')
-      .listen('MessagePushed', ({ message }) => {
-        console.log('chat');
-        this.messagesHistory.push(message.message);
-      });
-
-    this.getMessages();
+    this.loadGeneralChannel();
   },
 
   mounted() {
+    // this.$store.dispatch('general/pushMessage', { message: 'test10', });
+    // this.$store.dispatch('general/getMessages', { token: this.token });
   },
 
   computed: {
@@ -81,81 +39,59 @@ export default {
       currentUser: 'getUser',
       toUser: 'getToUser',
       users: 'getUsers',
+      messages: 'general/getMessages'
     }),
-
-  },
-
-  watch: {
-    '$route.params.room_id' : function(room) {
-      if (room == undefined) {
-        router.push('/chat');
-      } 
-
-      this.loadRoom()
-    },
 
   },
 
   methods: {
     // load room with listen event
-    loadRoom: function() {
-        window.Echo.private('room.' + this.room_id)
-          .listen('MessagePushed', ({ message }) => {
-            this.messagesHistory.push(message.message);
-          });
+    loadGeneralChannel: async function() {
+      await this.$store.dispatch('EchoAuth');
+        // .listen('MessagePushed', ({ message }) => {
+        //   this.messagesHistory.push(message.message);
+        // });
 
-        this.getMessages();
+      // ?? 
+      window.Echo.private('chat')
+        .listen('MessagePushed', ({ message }) => {
+          this.messagesHistory.push(message.message);
+        });
+
+      this.getMessages();
+
     },
 
     // send message
     sendMessage: async function() {
+      console.log('yes');
+      // let data = {
+      //   user: this.currentUser.id,
+      //   message: this.message,
+      // }
 
-      let data = {
-        user: this.currentUser.id,
-        room: this.room_id,
-        message: this.message,
-      }
+      // if (this.message != '') { 
+      //   try {
+      //     let response = await axios.post('http://chat.test/api/message', { data, token: this.token });
+      //     // this.messagesHistory.push(response.data); 
+      //   } catch (e) {
+      //     this.$swal('Oops!', 'Your message is not delivered!', 'error');
+      //   }
+      // } else {
+      //   return this.$swal('Oops!', 'Write message!', 'error');
+      // }
 
-      if (this.message != '') { 
-        try {
-          let response = await axios.post('http://chat.test/api/message', { data, token: this.token });
-          
-          // this.messagesHistory.push(response.data); 
-        } catch (e) {
-          this.$swal('Oops!', 'Your message is not delivered!', 'error');
-        }
-      } else {
-        return this.$swal('Oops!', 'Write message!', 'error');
-      }
-
-      this.message = '';
+      // this.message = '';
     },
 
-    // get history messages of room
+    // get history messages of general channel
     getMessages: async function() {
-      try {
-        var self = this;
+      await this.$store.dispatch('general/getMessages', { token: this.token });
 
-        var response = await axios.post('http://chat.test/api/messages',  
-          { room: this.room_id, token: this.token });
-      } catch (e) {
-        this.$swal('Oops!', 'History messages not found!', 'error');
-      }
-
-      self.messagesHistory = [];
-
-      response.data.forEach(function (item) {
-        var id = item.user_id;
-        // if (self.currentUser.id == id) {
-        //   self.messagesHistory.push('You: \n' + item.message);
-        // } else {
-        //   let user = self.users.filter(user => user.id == id);
-        //   self.messagesHistory.push(user[0].name + ': \n' + item.message);
-        // }
-
+      var self = this;
+      this.messages.forEach(function (item) {
         self.messagesHistory.push(item.message);
       });
-
     },
 
   }

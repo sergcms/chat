@@ -12,7 +12,8 @@
       </div>
       <hr>
       <div class="general d-flex justify-content-start">
-        <span v-on:click=" route.push('/chat') ">General channel</span>
+        <router-link class="link" to="/chat" >General channel</router-link>
+        <!-- <span v-on:click=" route.push('/chat') ">General channel</span> -->
       </div>
       <hr>
       <div class="users-list d-flex" id="users">
@@ -149,5 +150,3 @@
 
   }
 </script>
-
-
